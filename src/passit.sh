@@ -32,6 +32,33 @@ die() {
 	exit 1
 }
 
+version() {
+	cat <<-_EOF
+	passit v1.0
+	_EOF
+}
+
+usage() {
+	cmd_version
+	echo
+	cat <<-_EOF
+	Usage:
+	    $PROGRAM [--id, -i, --pss, -p, --url, -u] gpg-file
+	        Show existing id, password and/or url.
+	    $PROGRAM [-v, --version]
+	        Show version information
+	    $PROGRAM [-h, --help]
+	        Show this text
+	    $PROGRAM gpg-file
+	        Starts interactive mode, press key
+	        p: copy password to clipboard
+	        i: copy id to clipboard
+	        u: copy url to clipboard
+	        o: open url with xdg-open
+	        d/q: exit program
+	_EOF
+}
+
 clip() {
 	# This base64 business is because bash cannot store binary data in a shell
 	# variable. Specifically, it cannot store nulls nor (non-trivally) store
@@ -61,8 +88,10 @@ clip() {
 
 # parse args
 declare -a indexes=()
-eval set -- "$(getopt -o piu -l pss,id,url -n "$PROGRAM" -- "$@")"
+eval set -- "$(getopt -o piuhv -l pss,id,url,help,version -n "$PROGRAM" -- "$@")"
 while true; do case $1 in
+	-v|--version) version; exit ;;
+	-h|--help) usage; exit ;;
 	-p|--pss) indexes[0]='0'; shift ;;
 	-i|--id) indexes[1]='1'; shift ;;
 	-u|--url) indexes[2]='2'; shift ;;
