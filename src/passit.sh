@@ -88,10 +88,11 @@ clip() {
 
 # parse args
 declare -a indexes=()
-eval set -- "$(getopt -o piuhv -l pss,id,url,help,version -n "$PROGRAM" -- "$@")"
+eval set -- "$(getopt -o vhpiu -l help,version,pss,id,url -n "$PROGRAM" -- "$@")"
 while true; do case $1 in
 	-v|--version) version; exit ;;
 	-h|--help) usage; exit ;;
+
 	-p|--pss) indexes[0]='0'; shift ;;
 	-i|--id) indexes[1]='1'; shift ;;
 	-u|--url) indexes[2]='2'; shift ;;
@@ -105,8 +106,7 @@ file=$1
 if [[ -f $file ]]; then
 	declare -a lines
 	readarray -t lines < <($GPG -d "${GPG_OPTS[@]}" "$file" )
-
-	if [[ ${indexes[@]} -ne 0 ]]; then
+	if [[ ${#indexes[@]} -ne 0 ]]; then
 		for i in "${indexes[@]}"
 		do
 			echo "${lines[i]}"
